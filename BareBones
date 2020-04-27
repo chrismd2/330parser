@@ -1,0 +1,54 @@
+DOMAINS
+  toklist = string*
+
+PREDICATES
+  tokl(string, toklist)
+
+CLAUSES
+  tokl(Str, [H|T]):-
+    fronttoken(Str, H, Strl), !,
+    tokl(Strl, T).
+  tokl(_,[]).
+
+DOMAINS
+  program = program(statementlist)
+  statementlist = statement*
+  
+  statement = declare(type,name);
+  if_Then_Else(exp,statement,statement);
+  if_Then(exp,statement);
+  while(exp,statement);
+  assign(id,exp)
+  
+  exp = plus(exp,exp);
+  minus(exp,exp);
+  var(id);
+  int(integer)
+  id = string
+  type = string
+  name = string
+
+PREDICATES
+  s_program(toklist,program)
+  s_statement(toklist,toklist,statement)
+  s_statementlist(toklist,toklist,statementlist)
+ 
+CLAUSES
+  s_program(List1,program(StatementList)):-
+    write("s_program called\n"),
+    s_statementlist(List1,List2,StatementList),
+    List2=[].
+  s_statementlist([],[],[]):-!.
+  s_statementlist(List1,List4,[Statement|Program]):-
+    write("s_statementlist called\n\t"),
+    write(List1),
+    write("\n"),
+    s_statement(List1,List2,Statement),
+    List2=[";"|List3],
+    s_statementlist(List3,List4,Program).
+  s_statement(["int"|List1],List2,declare(Type1,Name1)):-
+    s_statement(List1, List2, Statement),
+    List2 = ["int"|List2].
+
+Goal tokl("int d;",Ans),
+  s_program(Ans,Res).
