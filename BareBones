@@ -7,6 +7,9 @@ PREDICATES
 CLAUSES
   tokl(Str, [H|T]):-
     fronttoken(Str, H, Strl), !,
+    write("tokl Called\n\t H: "),
+    write(H),
+    write("\n"),
     tokl(Strl, T).
   tokl(_,[]).
 
@@ -23,6 +26,7 @@ DOMAINS
   exp = plus(exp,exp);
   minus(exp,exp);
   var(id);
+  declare(type, name);
   int(integer)
   id = string
   type = string
@@ -32,23 +36,37 @@ PREDICATES
   s_program(toklist,program)
   s_statement(toklist,toklist,statement)
   s_statementlist(toklist,toklist,statementlist)
+  s_exp(toklist,toklist,exp)
  
 CLAUSES
   s_program(List1,program(StatementList)):-
     write("s_program called\n"),
-    s_statementlist(List1,List2,StatementList),
-    List2=[].
+    List2=[],
+    s_statementlist(List1,List2,StatementList).
   s_statementlist([],[],[]):-!.
-  s_statementlist(List1,List4,[Statement|Program]):-
+  s_statementlist(List1,List2,[Statement|Program]):-
     write("s_statementlist called\n\t"),
     write(List1),
     write("\n"),
     s_statement(List1,List2,Statement),
-    List2=[";"|List3],
-    s_statementlist(List3,List4,Program).
+    List2=[_|List1],
+    s_statementlist(List2,List2,Program).
+    
   s_statement(["int"|List1],List2,declare(Type1,Name1)):-
     s_statement(List1, List2, Statement),
-    List2 = ["int"|List2].
-
+    write("int declared\n"),
+    List2 = ["int"|List2],
+    s_exp(List1, List2, Exp),
+    Type1 = "int",
+    Name1 = "not the name".
+    
+  s_exp(LIST1, List, Exp):-
+    write("s_statementlist called\n\t"),
+    write(List1),
+    write("\n\t"),
+    Exp = declare("dummy", "dummy"),
+    write(Exp),
+    write("\n").
+  
 Goal tokl("int d;",Ans),
   s_program(Ans,Res).
