@@ -6,14 +6,6 @@ PREDICATES
 
 CLAUSES
   tokl(Str, [H|T]):-
-    fronttoken(Str, H, Strl), !,DOMAINS
-  toklist = string*
-
-PREDICATES
-  tokl(string, toklist)
-
-CLAUSES
-  tokl(Str, [H|T]):-
     fronttoken(Str, H, Strl), !,
     write("tokl Called\n\t H: "),
     write(H),
@@ -61,83 +53,22 @@ CLAUSES
     s_statementlist(List2,List2,Program).
     
   s_statement(["int"|List1],List3,declare(Type1,Name1)):-
-    s_exp(List1, List2, Exp),
     write("int declared\n"),
+    s_exp(List1, List2, Exp),
     List2 = [_|List2],
     s_statement(List1, List2, Statement),
     Type1 = "int",
     Name1 = "not the name".
     
-  s_exp(LIST1, List, Exp):-
+  s_exp([H|T], List, Exp):-
     write("s_exp called\n\t"),
-    write(List1),
+    write(H),
+    write("\t"),
+    write(T),
     write("\n\t"),
     Exp = declare("dummy", "dummy"),
     write(Exp),
     List = [],
-    write("\n").
-  
-Goal tokl("int d;",Ans),
-  s_program(Ans,Res).
-    write("tokl Called\n\t H: "),
-    write(H),
-    write("\n"),
-    tokl(Strl, T).
-  tokl(_,[]).
-
-DOMAINS
-  program = program(statementlist)
-  statementlist = statement*
-  
-  statement = declare(type,name);
-  if_Then_Else(exp,statement,statement);
-  if_Then(exp,statement);
-  while(exp,statement);
-  assign(id,exp)
-  
-  exp = plus(exp,exp);
-  minus(exp,exp);
-  var(id);
-  declare(type, name);
-  int(integer)
-  id = string
-  type = string
-  name = string
-
-PREDICATES
-  s_program(toklist,program)
-  s_statement(toklist,toklist,statement)
-  s_statementlist(toklist,toklist,statementlist)
-  s_exp(toklist,toklist,exp)
- 
-CLAUSES
-  s_program(List1,program(StatementList)):-
-    write("s_program called\n"),
-    List2=[],
-    s_statementlist(List1,List2,StatementList).
-  s_statementlist([],[],[]):-!.
-  s_statementlist(List1,List2,[Statement|Program]):-
-    write("s_statementlist called\n\t"),
-    write(List1),
-    write("\n"),
-    s_statement(List1,List2,Statement),
-    List2=[_|List1],
-    s_statementlist(List2,List2,Program).
-    
-  s_statement(["int"|List1],List2,declare(Type1,Name1)):-
-    s_statement(List1, List2, Statement),
-    write("int declared\n"),
-    List2 = ["int"|List2],
-    s_exp(List1, List2, Exp),
-    Type1 = "int",
-    Name1 = "not the name".
-    
-  s_exp(LIST1, List, Exp):-
-    write("s_statementlist called\n\t"),
-    write(List1),
-    write("\n\t"),
-    Exp = declare("dummy", "dummy"),
-    write(Exp),
     write("\n").
   
 Goal tokl("int d;",Ans),
