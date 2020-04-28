@@ -46,30 +46,32 @@ CLAUSES
   s_statementlist([],[],[]):-!.
   s_statementlist(List1,List2,[Statement|Program]):-
     write("s_statementlist called\n\t"),
-    write(List1),
     write("\n"),
     s_statement(List1,List2,Statement),
     List2=[_|List1],
-    s_statementlist(List2,List2,Program).
+    s_statementlist([_|List2],List2,Program).
     
   s_statement(["int"|List1],List3,declare(Type1,Name1)):-
     write("int declared\n"),
-    s_exp(List1, List2, Exp),
-    List2 = [_|List2],
-    s_statement(List1, List2, Statement),
-    Type1 = "int",
-    Name1 = "not the name".
+    s_exp(["int"], List1, Exp),
+    List3 = [],	
+    s_statementlist(List1, List2, Statement).
+  s_statement(["char"|List1],List4,declare(Type2,Name2)):-
+    write("char declared\n"),
+    s_exp(["char"], List1, Exp),
+    List4 = [],	
+    s_statementlist(List1, List2, Statement).
     
-  s_exp([H|T], List, Exp):-
+  s_exp([H|T], [H2|T2], Exp):-
     write("s_exp called\n\t"),
     write(H),
     write("\t"),
-    write(T),
+    write(H2),
     write("\n\t"),
-    Exp = declare("dummy", "dummy"),
+    Exp = declare(H, H2),
     write(Exp),
-    List = [],
-    write("\n").
+    write("\n"),
+    List = [].
   
-Goal tokl("int d;",Ans),
+Goal tokl("int d; int b; }",Ans),
   s_program(Ans,Res).
