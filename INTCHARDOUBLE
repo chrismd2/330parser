@@ -1,0 +1,89 @@
+DOMAINS
+  toklist = string*
+
+PREDICATES
+  tokl(string, toklist)
+
+CLAUSES
+  tokl(Str, [H|T]):-
+    fronttoken(Str, H, Strl), !,
+    write("tokl Called\n\t H: "),
+    write(H),
+    write("\n"),
+    tokl(Strl, T).
+  tokl(_,[]).
+
+DOMAINS
+  program = program(statementlist)
+  statementlist = statement*
+  
+  statement = declare(type,name);
+  if_Then_Else(exp,statement,statement);
+  if_Then(exp,statement);
+  while(exp,statement);
+  assign(id,exp)
+  
+  exp = plus(exp,exp);
+  minus(exp,exp);
+  var(id);
+  declare(type, name);
+  int(integer)
+  id = string
+  type = string
+  name = string
+
+PREDICATES
+  s_program(toklist,program)
+  s_statement(toklist,toklist,statement)
+  s_statementlist(toklist,toklist,statementlist)
+  s_exp(toklist,toklist,exp)
+ 
+CLAUSES
+  s_program(List1,program(StatementList)):-
+    write("s_program called\n"),
+    List2=[],
+    s_statementlist(List1,List2,StatementList).
+    
+  s_statementlist([],[],[]):-!.
+  s_statementlist(List1,List4,[Statement|Program]):-
+    write("s_statementlist called\n\t"),
+    write("\n"),
+    write(List1),
+    write("\n"),
+    s_statement(List1,List2,Statement),
+    List2=[";"|List3],
+    s_statementlist(List3,List4,Program).
+    
+  s_statement(["int"|List1],List3,declare(Type1,Name1)):-
+    write("int declared\n"),
+    s_exp(["int"], List1, Exp),
+    List1 = [_|List3],	
+    s_statementlist(List3, List2, Statement).  
+  s_statement(["char"|List1],List3,declare(Type1,Name1)):-
+    write("char declared\n"),
+    s_exp(["char"], List1, Exp),
+    List1 = [_|List3],	
+    s_statementlist(List3, List2, Statement). 
+  s_statement(["double"|List1],List3,declare(Type1,Name1)):-
+    write("double declared\n"),
+    s_exp(["double"], List1, Exp),
+    List1 = [_|List3],
+    s_statementlist(List3, List2, Statement).
+  s_statement([";"|List1],List3,declare(Type1,Name1)):-
+    write("terminator\n"),
+    List1 = [_|List3],	
+    s_statementlist(List1, List2, Statement).
+    
+  s_exp([H|T], [H2|T2], Exp):-
+    write("s_exp called\n\t"),
+    write(H),
+    write("\t"),
+    write(H2),
+    write("\n\t"),
+    Exp = declare(H, H2),
+    write(Exp),
+    write("\n"),
+    List = [].
+  
+Goal tokl("int d ; double b ; char c;",Ans),
+  s_program(Ans,Res).
